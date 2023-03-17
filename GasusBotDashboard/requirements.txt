@@ -1,0 +1,4 @@
+Django
+environs
+djangorestframework
+psycopg2

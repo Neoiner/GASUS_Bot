@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: postgres_database
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: kkramarenko
+      POSTGRES_PASSWORD: b67Ty-dWc23-TLct18
+      POSTGRES_DB: GASUScheduleBot
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+       - ./postresql_data:/var/lib/postgresql/data
+    ports:
+      - "54320:5432"
+    networks:
+      - botnet
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U kkramarenko -d GASUScheduleBot" ]
+      interval: 1s
+      timeout: 1s
+      retries: 5
+
+  redis:
+    container_name: redis_storage
+    image: "redis:alpine"
+    command: redis-server /data/redis.conf
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+      - ./redis.conf:/data/redis.conf
+    networks:
+      - botnet
+    restart: always
+
+  tgbot:
+    container_name: bot
+    build:
+      context: ./GASUScheduleBot/
+    depends_on:
+      - db
+      - redis
+      - dashboard
+    command: bash -c 'sleep 3 && python app.py'
+    networks:
+      - botnet
+    restart: on-failure
+
+  dashboard:
+    container_name: bot_dashboard
+    build:
+      context: ./GasusBotDashboard/
+    depends_on:
+      - db
+    command: bash -c 'sleep 3 && python ./dashboard/manage.py runserver 0.0.0.0:8000 --noreload'
+    ports:
+      - "8000:8000"
+    networks:
+      - botnet
+    restart: on-failure
+
+
+networks:
+  botnet:
+    driver: bridge

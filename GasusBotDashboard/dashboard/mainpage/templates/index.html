@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+<script>
+{% block jquery %}
+
+var total_users_endpoint = 'api/chart/total-users-data/'
+var labels = []
+var users_data = []
+$.ajax({
+    method: "GET",
+    url: total_users_endpoint,
+    success: function(data){
+        labels = data.labels
+        users_data = data.users_count
+        var ctx = document.getElementById('myChart');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '# of Registered Users',
+                    data: users_data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    },
+    error: function(data){
+        console.log(error_data)
+    }
+})
+
+
+
+{% endblock %}
+</script>
+
+{% block content %}
+
+<div class='row'>
+    <div class='col-sm-12'>
+        <div style="text-align:center">
+            <h1>Welcome to the GASU Schedule Bot Dashboard!</h1>
+        </div>
+
+        <hr>
+
+        <table style="width:100%; margin-bottom: 10px;">
+          <tr>
+            <th style="text-align: center; font-size: 23px;">Registered users</th>
+            <th style="text-align: center; font-size: 23px;">Active Users today</th>
+            <th style="text-align: center; font-size: 23px;">Subscribed Users</th>
+            <th style="text-align: center; font-size: 23px;">Daily subscribed</th>
+            <th style="text-align: center; font-size: 23px;">Weekly subscribed</th>
+            <th style="text-align: center; font-size: 23px;">Schedules count</th>
+          </tr>
+          <tr>
+            <td style="text-align: center; font-size: 23px;">{{ total_users }}</td>
+            <td style="text-align: center; font-size: 23px;">{{ active_users }}</td>
+            <td style="text-align: center; font-size: 23px;">{{ total_subscribed_users }}</td>
+            <td style="text-align: center; font-size: 23px;">{{ total_daily_subscribed_users }}</td>
+            <td style="text-align: center; font-size: 23px;">{{ total_weekly_subscribed_users }}</td>
+            <td style="text-align: center; font-size: 23px;">{{ total_schedules }}</td>
+          </tr>
+        </table>
+
+
+        <div class="chart-container" style="position: relative; height:40vh; width:70vw; margin: 0 auto;">
+            <canvas id="myChart"></canvas>
+        </div>
+
+
+    </div>
+</div>
+
+{% endblock content %}

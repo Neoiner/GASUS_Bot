@@ -1,0 +1,8 @@
+aiogram>=2.11.2,<3.0
+environs~=8.0.0
+apscheduler
+Django
+aioredis==1.3.1
+gino
+redis
+requests
